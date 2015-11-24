@@ -1,0 +1,9 @@
+#This is my Git Ignore file
+.DS_Store
+bucket.png
+bucket_50.png
+bucket_small copy.png
+bucket_small.png
+colonial_bucket3.jpg
+colonial_bucket3.psd
+colonial_bucket3small.psd
