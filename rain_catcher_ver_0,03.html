@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, maximum-scale=1.0, minimum-scale=1.0, initial-scale=1.0" />
+        <title>Test Game</title>  
+    </head>
+    <body style="background-color:#000000">
+            <canvas id="myCanvas" width="600" height="600" style="border:1px solid #c3c3c3;padding:0;margin:auto;display:block;background-color:#333;" onmousemove="startmoving(event)" ontouchmove="startmoving(event)" ontouchstart="startmoving(event)" onmouseout="stopmoving(event)" ontouchend="stopmoving(event)" ontouchcancel="stopmoving(event)" onclick="movedown()">
+            Your browser does not support the HTML5 canvas tag.
+            </canvas>
+            <div id="data" style="color: white;">test</div>
+            <button id="btn1" onclick="update()">Update</button>
+    </body>
+    <script>
+        //"#CC0033" red
+        //"#0099FF" blue
+            var c = document.getElementById("myCanvas");
+            c.addEventListener("mouseover", startmoving());
+            //var ctx = c.getContext("2d");
+            var x;
+            var y;
+            
+            var playing;
+
+            function startmoving(e) {
+                playing = setInterval(showCoords(e), 10);
+            }
+
+            function stopmoving() {
+                clearInterval(playing);
+            }
+
+            function movedown(eny){
+                if (eny > 600) {
+                    eny = Math.random() * 600;
+                } else {
+                    eny += 1;
+                }
+            }
+
+            function enemyMove(x,y){
+                run1 = setInterval(movedown(eny),100);
+
+                if ( eny < 600 ) {
+                    eny +=1;
+                } else {
+                    enx = Math.random() * 600;
+                    eny = Math.random() * 600;
+                }
+                drawRect(x,y,enx,eny)
+                //drawEnemy(enx,eny);
+
+            }
+
+            function drawEnemy(enx,eny){
+                var ctx = c.getContext("2d");
+                ctx.fillStyle = "#CC0033";
+                ctx.fillRect(enx,eny,10,10);
+            }
+
+            function drawRect(x,y,enx,eny){
+                var ctx = c.getContext("2d");
+                ctx.fillStyle = "#0099FF";
+                ctx.clearRect(0,0,600,600);
+                ctx.fillRect(x-25,y-25,50,50);
+                ctx.fillStyle = "#CC0033";
+                ctx.fillRect(enx,eny,10,10);
+            }
+
+            
+            function showCoords(e) {
+                var screenX = e.clientX;
+                var screenY = e.clientY;
+                var windowX = window.innerWidth;
+                var windowY = window.innerHeight;
+                var canvasX = c.clientWidth;
+                var canvasY = c.clientHeight;
+                var canvasBord = c.clientLeft;
+                var side_of_canvas = (windowX - (2*canvasBord) - canvasX)/2;
+                var top_of_canvas = 8 + (2*canvasBord);
+                x = screenX - canvasBord - side_of_canvas;
+                y = screenY - canvasBord - top_of_canvas;
+                var coords = "X coords: " + screenX + "<br />";
+                coords += " Y coords: " + screenY + "<br />";
+                //coords += " Window Width: " + windowX + "<br />";
+                //coords += " Window Height: " + windowY + "<br />";
+                //coords += " Canvas Width: " + canvasX + "<br />";
+                //coords += " Canvas Height: " + canvasY + "<br />";
+                //coords += " Canvas Bodrer: " + canvasBord + "<br />";
+                coords += " Canvas X: " + x + "<br />";
+                coords += " Canvas Y: " + y + "<br />";
+                document.getElementById("data").innerHTML = coords;
+                //enemyMove(x,y);
+                drawRect(x,y,x-55,y-55);
+            }
+
+    </script>
+</html>
+
+<!---->

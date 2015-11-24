@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html><head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, maximum-scale=1.0, minimum-scale=1.0, initial-scale=1.0">
+        <title>Test Game</title>  
+    </head>
+    <body style="background-color:#000000">
+        <canvas id="myCanvas" width="600" height="600" style="border:1px solid #c3c3c3;padding:0;margin:auto;display:block;background-color:#333;" onmouseover="update_screen()" onmousemove="startmoving(event)" onmouseout="stopmoving(event)" ontouchmove="startmoving(event)" ontouchstart="startmoving(event)" ontouchend="stopmoving(event)" ontouchcancel="stopmoving(event)">
+            Your browser does not support the HTML5 canvas tag.
+        </canvas>
+        <img id="bucket" width="65" height="52" src="./colonial_50.png" hidden>
+        <div id="hud" style="position: absolute;left: 50px;top: 50px;">
+            <select id="difficulty">
+                <option value=3>Easy</option>
+                <option value=2>Medium</option>
+                <option value=1 selected>Hard</option>
+                <option value=-3>Very Hard</option>
+                <option value=-7>Extremely Hard</option>
+                <option value=-11>Impossible</option>
+            </select>
+            <div id="data" style="color: white;"></div>
+            <div id="data1" style="color: white;"></div>
+            <div id="data2" style="color: white;"></div>
+        </div>
+    <script>
+        //"#CC0033" red
+        //"#0099FF" blue
+        //"#333" grey
+
+        var c = document.getElementById("myCanvas");
+        //onmousemove="startmoving(event)" ontouchmove="startmoving(event)" ontouchstart="startmoving(event)" onmouseout="stopmoving(event)" ontouchend="stopmoving(event)" ontouchcancel="stopmoving(event)" onclick="movedown()"
+        //var ctx = c.getContext("2d");
+        var screenY;
+        var screenX;
+        var x;
+        var y;
+        var enx;
+        var eny;
+        var hits = 0;
+        var count = 0;
+        var red_duration = 50;
+        var red_count = red_duration;
+        var lives = 3;
+        var my_bucket=document.getElementById("bucket");
+        var difficulty = document.getElementById("difficulty").value
+
+        function startmoving(e) {
+            difficulty = document.getElementById("difficulty").value
+            showCoords(e)
+        }
+
+        function update_screen() {
+            difficulty = document.getElementById("difficulty").value
+            run2 = setInterval(drawCanvas, 10);
+        }
+
+        function stopmoving() {
+            clearInterval(run2);
+            document.getElementById("data").innerHTML = "false";
+        }
+
+        function movedown(){
+            if (eny == null) {
+                eny = (Math.random() * 400);
+                enx = (Math.random() * 600);
+            }
+            if (eny > 600) {
+                eny = (Math.random() * 400);
+                enx = (Math.random() * 600);
+            } 
+            if (eny <= 600) {
+                eny += 1;
+            }  
+        }
+
+        function drawCanvas(){
+            if (difficulty > 0) {
+                if (count > difficulty) {
+                   movedown();
+                   count = 1; 
+                }
+            } else {
+                for (i=0; i>difficulty; i--) {
+                    movedown();
+                    if (eny >= 599) {
+                        redx = enx;
+                        lives -= 1;
+                        eny = null;
+                        red_count = 0;
+                    }
+                }
+            }
+
+            count += 1;
+            red_count += 1;
+            if ((enx + 10) > (x-25) & enx < (x+25)) {
+                if ((eny + 10) > (y-25) & eny < (y+25)) {
+                    hits += 1;
+                    eny = null;
+                }
+            }
+            if (eny >= 599) {
+                redx = enx;
+                lives -= 1;
+                eny = null;
+                red_count = 0;
+            }
+            var ctx = c.getContext("2d");
+            ctx.clearRect(0,0,600,600);
+            
+            make_clouds();
+            make_grass();
+
+            if (red_count < red_duration) {
+                // Create gradient
+                var grd=ctx.createRadialGradient(redx,600,15,redx,600,75);
+                grd.addColorStop(0,"red");
+                grd.addColorStop(1,"#333");
+                // Fill with gradient
+                ctx.fillStyle = grd;
+                // ctx.fillStyle = "#CC0033";
+                ctx.fillRect(redx-75,600-75,150,80);
+                // rain_splash(redx);
+            }
+            ctx.drawImage(my_bucket,x-25,y-26);
+            ctx.fillStyle = "#0099FF";
+            rain_drop(enx,eny);
+
+            coords = "X coords: " + screenX + " : Y coords: " + screenY + "<br />";
+            coords += " Canvas X: " + x + " : Canvas Y: " + y + "<br />";
+            document.getElementById("data").innerHTML = "Lives: " + lives + " | Hits: " + hits;
+
+            if (lives == 0) {
+                alert(("Game Over \nYour Score: " + hits));
+                hits = 0;
+                lives = 3;
+                red_count = red_duration;
+            }
+        }
+
+        
+        function showCoords(e) {
+            screenX = e.clientX;
+            screenY = e.clientY;
+            windowX = window.innerWidth;
+            windowY = window.innerHeight;
+            canvasX = c.clientWidth;
+            canvasY = c.clientHeight;
+            canvasBord = c.clientLeft;
+            side_of_canvas = (windowX - (2*canvasBord) - canvasX)/2;
+            top_of_canvas = 8 + (2*canvasBord);
+            x = screenX - canvasBord - side_of_canvas;
+            y = screenY - canvasBord - top_of_canvas;
+        }
+
+        function rain_drop(x,y) {
+            var ctx = c.getContext("2d");
+            ctx.beginPath();
+            ctx.arc(x,y,6,0,1*Math.PI);
+            ctx.fill();
+            ctx.moveTo(x-6,y);
+            ctx.lineTo(x,y-15);
+            ctx.lineTo(x+6,y);
+            ctx.lineTo(x-6,y);
+            ctx.fill();
+            ctx.fillStyle = "white";
+            ctx.beginPath();
+            ctx.arc(x-3,y+1,1,0,2*Math.PI);
+            ctx.fill();
+        }
+
+        function make_bucket(x,y) {
+            var ctx = c.getContext("2d");
+            ctx.strokeStyle = "#3b280b";
+            ctx.beginPath();
+            ctx.moveTo(x-25, y-25);
+            ctx.quadraticCurveTo(x, y-35, x+25, y-25);
+            ctx.quadraticCurveTo(x, y-15, x-25, y-25);
+            ctx.lineTo(x-20,y+25);
+            ctx.lineTo(x+20,y+25);
+            ctx.lineTo(x+25,y-25);
+            ctx.stroke();
+            ctx.fillStyle = "#533910";
+            ctx.fill();
+        }
+
+        function rain_splash(x) {
+            var ctx = c.getContext("2d");
+            var y=580;
+
+            var c = document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
+            ctx.beginPath();
+            ctx.moveTo(140, 75);
+            ctx.quadraticCurveTo(150, 60, 160, 75);
+            ctx.lineTo(150,100);
+            ctx.lineTo(140,75);
+            ctx.stroke();
+
+            // ctx.beginPath();
+            // ctx.arc(x,y,6,0,1*Math.PI);
+            // ctx.fill();
+            // ctx.moveTo(x-6,y);
+            // ctx.lineTo(x,y-15);
+            // ctx.lineTo(x+6,y);
+            // ctx.lineTo(x-6,y);
+            // ctx.fill();
+            // ctx.fillStyle = "white";
+            // ctx.beginPath();
+            // ctx.arc(x-3,y+1,1,0,2*Math.PI);
+            // ctx.fill();
+        }
+
+        function make_grass() {
+            var ctx = c.getContext("2d");
+            ctx.beginPath();
+            ctx.fillStyle = "green";
+            ctx.moveTo(0,595);
+            var gx = 0;
+            var gy = 580;
+            var addx = 3;
+            var addy = 15;
+            while (gx < 599){
+                gx += addx;
+                if (gx % 2) {
+                    gy += addy; 
+                } else {
+                    gy -= addy;
+                }
+                ctx.lineTo(gx,gy);
+            }
+            ctx.lineTo(600,595);
+            ctx.lineTo(600,600);
+            ctx.lineTo(0,600);
+            ctx.lineTo(0,595);
+            ctx.fill();
+            ctx.closePath();
+
+
+            ctx.beginPath();
+            ctx.fillStyle = "green";
+            ctx.moveTo(0,595);
+            var gx = 0;
+            var gy = 580;
+            var addx = 3;
+            var addy = 25;
+            while (gx < 599){
+                if (gx % 2) {
+                    gx += 1;
+                } else {
+                    gx += 3;
+                }
+                if (gx % 2) {
+                    gy += addy; 
+                } else {
+                    gy -= addy;
+                }
+                ctx.lineTo(gx,gy);
+            }
+            ctx.lineTo(600,595);
+            ctx.lineTo(600,600);
+            ctx.lineTo(0,600);
+            ctx.lineTo(0,595);
+            ctx.fill();
+            ctx.closePath();
+
+        }
+
+        function make_clouds() {
+            var ctx = c.getContext("2d");
+            ctx.beginPath();
+            ctx.fillStyle = "white";
+            ctx.moveTo(0,15);
+            var cx = 0;
+            var cy = 20;
+            var addx = 20;
+            var addy = 15;
+            while (cx < 599){
+                ctx.quadraticCurveTo(cx + addx, cy + addy, cx + (2*addx), cy);
+                cx += (2*addx);
+            }
+            ctx.lineTo(600,15);
+            ctx.lineTo(600,0);
+            ctx.lineTo(0,0);
+            ctx.lineTo(0,15);
+            ctx.fill();
+            ctx.closePath();
+        }
+
+    </script>
+    </body>
+</html>

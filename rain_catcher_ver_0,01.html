@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, maximum-scale=1.0, minimum-scale=1.0, initial-scale=1.0" />
+        <title>Test Game</title> 
+        <script type="text/javascript" src="./jquery-1.11.3.min.js"></script>
+        <script type="text/javascript">
+            $("#myCanvas").ready(function() {
+                $("document").on("mouseover", onMouseOver);
+                $("document").on("click", onMouseClick);
+                $("document").on("mouseleave", onMouseLeave);
+            });
+
+            function onMouseOver(evt) {
+                $("#data").text(evt.type + ": " + evt.pageX + ", " + evt.pageY + "\n" + "Button: " + evt.which + "Key: " + evt.metaKey);
+            }
+            function onMouseClick(evt) {
+                $("#data").text(evt.type + ": " + evt.pageX + ", " + evt.pageY); 
+                $("#data").off("mousemove", onMouseOver);
+            }
+            function onMouseLeave(evt) {
+                $("#data").text("mouseleave");
+            }
+
+
+        </script>  
+    </head>
+    <body style="background-color:#000000">
+            <canvas id="myCanvas" width="600" height="600" style="border:1px solid #c3c3c3;padding:0;margin:auto;display:block;background-color:#333;">
+            Your browser does not support the HTML5 canvas tag.
+            </canvas>
+            <div id="data"></div>
+        
+    </body>
+    <script>
+        //"#CC0033" red
+        //"#0099FF" blue
+            var c = document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
+            ctx.fillStyle = "#0099FF";
+            ctx.rect(100,100,50,50);
+            ctx.fill();
+    </script>
+</html>
+
+<!---->

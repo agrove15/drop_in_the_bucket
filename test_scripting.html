@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html><head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, maximum-scale=1.0, minimum-scale=1.0, initial-scale=1.0">
+        <title>Test Scripting</title>  
+    </head>
+    <body id="main" style="background-color:#000000">
+        
+        <div id="hud" style="position: absolute;left: 50px;top: 50px;">
+            
+            <div id="data" style="color: white;"></div>
+            <div id="data1" style="color: white;"></div>
+            <div id="data2" style="color: white;"></div>
+            <button id="mybutton" onclick="on_off_toggle()"></button>
+        </div>
+    <script>
+        var time_played = 606;
+        var time_played_s=time_played%60;
+        var time_played_m=((Math.floor(time_played/60))%60);
+        var time_played_h=(Math.floor(time_played/60/60));
+        var output = "Time Played: ";
+        if (time_played_h > 1) {
+            output += time_played_h + " Hours, ";
+        } else if (time_played_h > 0) {
+            output += time_played_h + " Hour, ";
+        }
+        if (time_played_m > 1) {
+            output += time_played_m + " Minutes, ";
+        } else if (time_played_m > 0) {
+            output += time_played_m + " Minute, ";
+        }
+        output += time_played_s + " Seconds";
+        document.getElementById("data").innerHTML = output;
+
+        document.getElementById("mybutton").innerHTML = "OFF";
+        document.cookie = "state=this_is_a_test2";
+        var my_state = document.cookie;
+        document.getElementById("data1").innerHTML = my_state;
+        
+        function on_off_toggle(){
+            //document.getElementById("mybutton").innerHTML = "ON";
+            document.getElementById("mybutton").innerHTML = my_state[state];
+
+            if (my_state[state] == "OFF"){
+                document.getElementById("mybutton").innerHTML = "ON";
+                document.cookie = "state=ON";
+            } 
+            if (my_state[state] == "ON"){
+                document.getElementById("mybutton").innerHTML = "OFF";
+                document.cookie = "state=OFF";
+            }
+        }
+
+
+    </script>
+    </body>
+</html>
